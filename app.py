@@ -14,7 +14,7 @@ def get_dataset():
         dict_dataset = df.to_dict()
         return jsonify(dict_dataset)
 
-    elif dataset_name == None:
+    elif dataset_name is None:
         return jsonify({'message': 'Nenhum nome de dataset foi passado'})
 
     else:
@@ -24,19 +24,16 @@ def get_dataset():
 def get_csv():
     dataset_name = request.args.get('name')+'.csv'
 
-    if dataset_name in os.listdir('datasets'):
-        path_dataset = './datasets/' + dataset_name
-        df = pd.read_csv(path_dataset)
-        csv_string = df.to_csv(index=False)
-        headers = {
-            "Content-Type": "text/csv",
-            "Content-Disposition": "attachment;filename=path_dataset"
-        }
-        response = make_response(csv_string, 200, headers)
-        return response
-
-    else:
+    if dataset_name not in os.listdir('datasets'):
         return jsonify({'message': 'Dataset nao encontrado'})
+    path_dataset = './datasets/' + dataset_name
+    df = pd.read_csv(path_dataset)
+    csv_string = df.to_csv(index=False)
+    headers = {
+        "Content-Type": "text/csv",
+        "Content-Disposition": "attachment;filename=path_dataset"
+    }
+    return make_response(csv_string, 200, headers)
 
 if __name__ == '__main__':
     app.run(debug=True)
